@@ -1,0 +1,25 @@
+{
+  "type": "module",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "fs.promises": "^0.1.2",
+    "node-fetch": "^3.0.0"
+  },
+  "name": "autoupdate-statistic-1inc",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavelkurmacheff/autoupdate-statistic-1inch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pavelkurmacheff/autoupdate-statistic-1inch/issues"
+  },
+  "homepage": "https://github.com/pavelkurmacheff/autoupdate-statistic-1inch#readme"
+}
