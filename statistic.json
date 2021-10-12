@@ -1,1 +1,17 @@
-{"eth":{"total-users":135.345,"total-volume":72671430835.68086,"total-trades":3129307},"polygon":{"total-users":77966,"total-volume":54194,"total-trades":6341565921.743551}}
+{
+  "eth": {
+    "total-users": 135.345,
+    "total-volume": 72671430835.68086,
+    "total-trades": 3129307
+  },
+  "polygon": {
+    "total-users": 77966,
+    "total-volume": 54194,
+    "total-trades": 6345309261.026445
+  },
+  "bsc": {
+    "total-users": 267630,
+    "total-volume": 10027645609.63069,
+    "total-trades": 1923360
+  }
+}

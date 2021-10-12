@@ -4,16 +4,17 @@ import fs from 'fs';
 getResultData();
 
 async function getResultData () {
-    const [a, b, c, d, e, f] = await Promise.all([
+    const [a, b, c, d, e, f, g] = await Promise.all([
         ETHUsers(),
         TotalVolumeETH(),
         TotalTradesETH(),
         totalTradesPolygon(),
         totalUsersPolygon(),
         totalVolumePolygon(),
+        totalTradesBSC(),
     ]);
 
-    console.log(a, b, c, d, e, f);
+    console.log(a, b, c, d, e, f, g.trades, g.tradeAmount, g.uniqueWallets);
 
     const resultData = {};
 
@@ -27,6 +28,12 @@ async function getResultData () {
         "total-volume": e,
         "total-trades": f,
     }
+    resultData.bsc = {
+        "total-users": g.uniqueWallets,
+        "total-volume": g.tradeAmount,
+        "total-trades": g.trades,
+    }
+
 
     fs.writeFileSync(`statistic.json`, JSON.stringify(resultData));
 }
@@ -188,3 +195,52 @@ function totalVolumePolygon() {
         .catch(error => console.log('error', error));
 }
 
+function totalTradesBSC() {
+    let raw = JSON.stringify({
+        "query": "{\n  ethereum(network: bsc) {\n    dexTrades(any: {txTo: {is: \"0x11111112542D85B3EF69AE05771c2dCCff4fAa26\"}}) {\n      date: date {\n        date(format: \"%Y-%m\")\n      }\n      trades: count(uniq: txs)\n      tradeAmount(in: USD)\n      uniqueWallets: count(uniq: senders)\n    }\n  }\n}",
+        "variables": "{}"
+    });
+
+    let requestOptions = {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+        },
+        body: raw,
+        redirect: 'follow'
+    };
+
+    return fetch("https://graphql.bitquery.io/", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+            const { data } = JSON.parse(result);
+            const { dexTrades } = data.ethereum
+            const trades = dexTrades.map(item => {
+                return item.trades
+            })
+            const tradesSum = trades.reduce((previousValue, currentValue) => {
+                return previousValue + currentValue;
+            });
+
+            const tradeAmounts = dexTrades.map(item => {
+                return item.tradeAmount
+            })
+            const tradeAmountSum = tradeAmounts.reduce((previousValue, currentValue) => {
+                return previousValue + currentValue;
+            });
+
+            const uniqueWallets = dexTrades.map(item => {
+                return item.uniqueWallets
+            })
+            const uniqueWalletsSum = uniqueWallets.reduce((previousValue, currentValue) => {
+                return previousValue + currentValue;
+            });
+
+            return {
+                trades: tradesSum,
+                tradeAmount: tradeAmountSum,
+                uniqueWallets: uniqueWalletsSum,
+            }
+        })
+        .catch(error => console.log('error', error));
+}
