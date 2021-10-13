@@ -1,1 +1,22 @@
-{"eth":{"total-users":135.345,"total-volume":72671430835.68086,"total-trades":3129307},"polygon":{"total-users":77966,"total-volume":54194,"total-trades":6356731403.056478},"bsc":{"total-users":269256,"total-volume":10048403615.531769,"total-trades":1929091}}
+{
+  "eth": {
+    "total-users": 135.345,
+    "total-volume": 72671430835.68086,
+    "total-trades": 3129307
+  },
+  "polygon": {
+    "total-users": 77966,
+    "total-volume": 54194,
+    "total-trades": 6369313818.413251
+  },
+  "bsc": {
+    "total-users": 271241,
+    "total-volume": 10069349944.057003,
+    "total-trades": 1935663
+  },
+  "limitOrderProtocol": {
+    "total-volume": 980022074.6184524,
+    "total-trades": 29376,
+    "total-users": 2032
+  }
+}

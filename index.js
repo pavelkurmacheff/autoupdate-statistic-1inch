@@ -4,7 +4,7 @@ import fs from 'fs';
 getResultData();
 
 async function getResultData () {
-    const [usersETH, volumeETH, tradesETH , usersPolygon, volumePolygon, tradesPolygon, BSC] = await Promise.all([
+    const [usersETH, volumeETH, tradesETH , usersPolygon, volumePolygon, tradesPolygon, BSC, volumeLimitOrderProtocol, tradesLimitOrderProtocol, usersLimitOrderProtocol] = await Promise.all([
         ETHUsers(),
         TotalVolumeETH(),
         TotalTradesETH(),
@@ -12,13 +12,16 @@ async function getResultData () {
         totalUsersPolygon(),
         totalVolumePolygon(),
         totalTradesBSC(),
+        totalVolumeLimitOrder(),
+        totalTradesLimitOrder(),
+        totalUsersLimitOrder(),
     ]);
 
-    console.log(usersETH, volumeETH, tradesETH, usersPolygon, volumePolygon, tradesPolygon, BSC.trades, BSC.tradeAmount, BSC.uniqueWallets);
+    console.log(usersETH, volumeETH, tradesETH, usersPolygon, volumePolygon, tradesPolygon, BSC.trades, BSC.tradeAmount, BSC.uniqueWallets, volumeLimitOrderProtocol, tradesLimitOrderProtocol, usersLimitOrderProtocol);
 
     const resultData = {};
 
-    resultData.eth = {
+    resultData.ethereum = {
         "total-users": usersETH,
         "total-volume": volumeETH,
         "total-trades": tradesETH,
@@ -28,10 +31,15 @@ async function getResultData () {
         "total-volume": volumePolygon,
         "total-trades": tradesPolygon,
     }
-    resultData.bsc = {
+    resultData.binanceSmartChain = {
         "total-users": BSC.uniqueWallets,
         "total-volume": BSC.tradeAmount,
         "total-trades": BSC.trades,
+    }
+    resultData.limitOrderProtocol = {
+        "total-volume": volumeLimitOrderProtocol,
+        "total-trades": tradesLimitOrderProtocol,
+        "total-users": usersLimitOrderProtocol,
     }
 
 
@@ -241,6 +249,87 @@ function totalTradesBSC() {
                 tradeAmount: tradeAmountSum,
                 uniqueWallets: uniqueWalletsSum,
             }
+        })
+        .catch(error => console.log('error', error));
+}
+
+function totalVolumeLimitOrder() {
+    let raw = JSON.stringify({
+        "operationName": "FindResultDataByJob",
+        "variables": {
+            "job_id": "665c12dd-9dc0-475c-b330-9a2950f182a1"
+        },
+        "query": "query FindResultDataByJob($job_id: uuid!) {\n  query_results(where: {job_id: {_eq: $job_id}}) {\n    id\n    job_id\n    error\n    runtime\n    generated_at\n    columns\n    __typename\n  }\n  get_result_by_job_id(args: {want_job_id: $job_id}) {\n    data\n    __typename\n  }\n}\n"
+    });
+
+    let requestOptions = {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+        },
+        body: raw,
+        redirect: 'follow'
+    };
+
+    return fetch("https://core-hsr.duneanalytics.com/v1/graphql", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+            const {data} = JSON.parse(result);
+            return data.get_result_by_job_id[0].data.volume;
+        })
+        .catch(error => console.log('error', error));
+}
+
+function totalTradesLimitOrder() {
+    let raw = JSON.stringify({
+        "operationName": "FindResultDataByJob",
+        "variables": {
+            "job_id": "eaaed680-5eb4-4a33-a06c-c1ae14f76ef9"
+        },
+        "query": "query FindResultDataByJob($job_id: uuid!) {\n  query_results(where: {job_id: {_eq: $job_id}}) {\n    id\n    job_id\n    error\n    runtime\n    generated_at\n    columns\n    __typename\n  }\n  get_result_by_job_id(args: {want_job_id: $job_id}) {\n    data\n    __typename\n  }\n}\n"
+    });
+
+    let requestOptions = {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+        },
+        body: raw,
+        redirect: 'follow'
+    };
+
+    return fetch("https://core-hsr.duneanalytics.com/v1/graphql", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+            const {data} = JSON.parse(result);
+            return data.get_result_by_job_id[0].data.swaps;
+        })
+        .catch(error => console.log('error', error));
+}
+
+function totalUsersLimitOrder() {
+    let raw = JSON.stringify({
+        "operationName": "FindResultDataByJob",
+        "variables": {
+            "job_id": "f7c32863-675d-4789-b88c-5bbb5f98aa4a"
+        },
+        "query": "query FindResultDataByJob($job_id: uuid!) {\n  query_results(where: {job_id: {_eq: $job_id}}) {\n    id\n    job_id\n    error\n    runtime\n    generated_at\n    columns\n    __typename\n  }\n  get_result_by_job_id(args: {want_job_id: $job_id}) {\n    data\n    __typename\n  }\n}\n"
+    });
+
+    let requestOptions = {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+        },
+        body: raw,
+        redirect: 'follow'
+    };
+
+    return fetch("https://core-hsr.duneanalytics.com/v1/graphql", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+            const {data} = JSON.parse(result);
+            return data.get_result_by_job_id[0].data.users;
         })
         .catch(error => console.log('error', error));
 }
