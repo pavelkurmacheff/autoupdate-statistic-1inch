@@ -4,7 +4,7 @@ import fs from 'fs';
 getResultData();
 
 async function getResultData () {
-    const [a, b, c, d, e, f, g] = await Promise.all([
+    const [usersETH, volumeETH, tradesETH , usersPolygon, volumePolygon, tradesPolygon, BSC] = await Promise.all([
         ETHUsers(),
         TotalVolumeETH(),
         TotalTradesETH(),
@@ -14,24 +14,24 @@ async function getResultData () {
         totalTradesBSC(),
     ]);
 
-    console.log(a, b, c, d, e, f, g.trades, g.tradeAmount, g.uniqueWallets);
+    console.log(usersETH, volumeETH, tradesETH, usersPolygon, volumePolygon, tradesPolygon, BSC.trades, BSC.tradeAmount, BSC.uniqueWallets);
 
     const resultData = {};
 
     resultData.eth = {
-        "total-users": a,
-        "total-volume": b,
-        "total-trades": c,
+        "total-users": usersETH,
+        "total-volume": volumeETH,
+        "total-trades": tradesETH,
     }
     resultData.polygon = {
-        "total-users": d,
-        "total-volume": e,
-        "total-trades": f,
+        "total-users": usersPolygon,
+        "total-volume": volumePolygon,
+        "total-trades": tradesPolygon,
     }
     resultData.bsc = {
-        "total-users": g.uniqueWallets,
-        "total-volume": g.tradeAmount,
-        "total-trades": g.trades,
+        "total-users": BSC.uniqueWallets,
+        "total-volume": BSC.tradeAmount,
+        "total-trades": BSC.trades,
     }
 
 
